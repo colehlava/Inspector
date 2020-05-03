@@ -10,16 +10,16 @@
 #include <libusb.h>
 #include <wiringPiI2C.h>
 
-#define FILTER_SIZE 5
-#define INPOINT 0x2
+#define MESSAGE_SIZE 8
+#define INPOINT      2 
 
 
-// **************************************************************************************
 // main
 int main (int argc, char * argv[]) {
   
   // USB variables
-  int return_val;
+  char message[MESSAGE_SIZE];
+  int usb_return_val;
   int sent_bytes;
 
   // Configure USB
@@ -52,19 +52,36 @@ int main (int argc, char * argv[]) {
     return -1;
   }
 
+  // Open data files
+  FILE* button_file = fopen("button_status.txt", "r");
+  FILE* spead_file = fopen("speed.txt", "r");
+
+  // Ensure files exist
+  if (button_file == NULL || speed_file == NULL) {
+    printf("Failed to open data files.\n")
+    return -1;
+  }
 
   // Main loop
   while (1) {
+      // Format message to be sent over USB
+      // TODO ^
+      //
+      
+
       // Perform OUT transfer (from host to device).
-      return_val = libusb_bulk_transfer(device, INPOINT, rx_data, TRANSFER_SIZE, &sent_bytes, 0);
+      usb_return_val = libusb_bulk_transfer(device, INPOINT, message, TRANSFER_SIZE, &sent_bytes, 0);
 
       // Throw error if OUT transfer failed
-      if (return_val != 0) {
+      if (usb_return_val != 0) {
           perror("OUT transfer failed\n");
           return -1;
       }
   }
 
+  // Cleanup
+  fclose(button_file);
+  fclose(speed_file);
   libusb_close(device);
   return 0;
 }
