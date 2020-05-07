@@ -22,9 +22,7 @@ int main (int argc, char * argv[]) {
   // USB variables
   int usb_return_val;
   int sent_bytes;
-  char message[MESSAGE_SIZE] = {"abcdefg\0"};
-  /*for (int i = 0; i < MESSAGE_SIZE; i++)
-    message[i] = 0;*/
+  char message[MESSAGE_SIZE];
 
   // Configure USB
   libusb_init(NULL);            // Initialize the LIBUSB library
@@ -56,25 +54,36 @@ int main (int argc, char * argv[]) {
     return -1;
   }
 
-  // Open data files
-  //FILE* button_file = fopen("button_status.txt", "r");
-  //FILE* spead_file = fopen("speed.txt", "r");
-
-  // Ensure files exist
-  /*if (button_file == NULL || speed_file == NULL) {
-    printf("Failed to open data files.\n");
-    return -1;
-  }*/
-
-
-  uint8_t send_val = 0;
+  // Message formatting variables
+  FILE* button_file;
+  FILE* speed_file;
+  char button_status_string[4];
+  char speed_status_string[4];
+  int button_status_int, speed_status_int;
 
   // Main loop
   while (1) {
+      // Open data files
+      button_file = fopen("button_status.txt", "r");
+      speed_file = fopen("speed.txt", "r");
+
+      // Ensure files exist
+      if (button_file == NULL || speed_file == NULL) {
+        printf("Failed to open data files.\n");
+        return -1;
+      }
+
       // Format message to be sent over USB
-      // TODO ^
-      // 
-      sprintf(message, "%07d", send_val++);
+      fgets(button_status_string, 4, button_file);
+      button_status_int = atoi(button_status_string);
+
+      fgets(speed_status_string, 4, speed_file);
+      speed_status_int = atoi(speed_status_string);
+
+      //printf("button_status_string = %s, speed_status_string = %s\n", button_status_string, speed_status_string);
+      //printf("button_status = %d, speed_status = %d\n", button_status_int, speed_status_int);
+      sprintf(message, "F%02d,S%02d", button_status_int, speed_status_int);
+      printf("%s\n", message);
 
       // Perform OUT transfer (from host to device).
       usb_return_val = libusb_bulk_transfer(device, INPOINT, message, MESSAGE_SIZE, &sent_bytes, 0);
@@ -86,13 +95,15 @@ int main (int argc, char * argv[]) {
       }
 
       // Delay
-      for (int i = 0; i < 100000000; i++);
+      for (int i = 0; i < 200000000; i++);
   }
 
   // Cleanup
-  //fclose(button_file);
-  //fclose(speed_file);
   libusb_close(device);
+  if (button_file != NULL)
+      fclose(button_file);
+  if (speed_file != NULL)
+      fclose(speed_file);
   return 0;
 }
 
