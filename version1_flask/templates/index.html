@@ -3,15 +3,22 @@
 <head>
     <title>Stream</title>
 </head>
+
 <body>
     <div align="center">
         <h1>Live Feed</h1>
         <img src="{{ url_for('video_feed') }}">
     </div>
+
     <form method="post" action="/">
         <input type="submit" name="on" value="on">
         <input type="submit" name="off" value="off">
     </form>
+
+    <form method="post" action="/key_input">
+        <input type="text" name="intext" value="" autofocus="autofocus">
+    </form>
+
     <form method="post" action="/speed_slider">
         <div class="slidecontainer" id="slide_container1" align="center">
             <input type="range" id="speed" name="speed" min="0" max="99">
@@ -20,3 +27,4 @@
     </form>
 </body>
 </html>
+

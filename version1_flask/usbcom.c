@@ -57,18 +57,20 @@ int main (int argc, char * argv[]) {
   // Message formatting variables
   FILE* button_file;
   FILE* speed_file;
+  FILE* key_input_file;
   char button_status_string[4];
   char speed_status_string[4];
-  int button_status_int, speed_status_int;
+  int button_status_int, speed_status_int, key_input_int;
 
   // Main loop
   while (1) {
-      // Open data files
+      // Open data files for reading
       button_file = fopen("button_status.txt", "r");
       speed_file = fopen("speed.txt", "r");
+      key_input_file = fopen("key_input.txt", "r");
 
       // Ensure files exist
-      if (button_file == NULL || speed_file == NULL) {
+      if (button_file == NULL || speed_file == NULL || key_input_file == NULL) {
         printf("Failed to open data files.\n");
         return -1;
       }
@@ -80,9 +82,11 @@ int main (int argc, char * argv[]) {
       fgets(speed_status_string, 4, speed_file);
       speed_status_int = atoi(speed_status_string);
 
+      key_input_int = fgetc(key_input_file);
+
       //printf("button_status_string = %s, speed_status_string = %s\n", button_status_string, speed_status_string);
       //printf("button_status = %d, speed_status = %d\n", button_status_int, speed_status_int);
-      sprintf(message, "F%02d,S%02d", button_status_int, speed_status_int);
+      sprintf(message, "P%01dS%02dD%c;", button_status_int, speed_status_int, key_input_int);
       printf("%s\n", message);
 
       // Perform OUT transfer (from host to device).

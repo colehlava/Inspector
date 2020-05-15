@@ -1,7 +1,7 @@
 # web_interface.py
 # Creates html file to stream video feed to web browser.
 
-import flask, cv2, datetime, threading, argparse
+import flask, cv2, threading, argparse
 
 # Global variables
 app = flask.Flask(__name__.split('.')[0])
@@ -11,7 +11,7 @@ frameLock = threading.Lock()
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    # Read button value inputs from user
+    # Read button inputs from user
     if flask.request.method == 'POST':
         if flask.request.form.get('on') == 'on':
             with open('button_status.txt', 'w') as bs:
@@ -24,9 +24,22 @@ def index():
     return flask.render_template("index.html")
 
 
+@app.route("/key_input", methods=['GET', 'POST'])
+def updateKeyInput():
+    # Read key input from user and write most recent key to data file
+    if flask.request.method == 'POST':
+        with open('key_input.txt', 'w') as ki:
+            input_unformatted = flask.request.form.get('intext')
+            last_input_key = input_unformatted[len(input_unformatted) - 1]
+            ki.write(last_input_key)
+
+    # Return the rendered html file
+    return flask.render_template("index.html")
+
+
 @app.route("/speed_slider", methods=['GET', 'POST'])
 def updateSpeed():
-    # Read speed slider value from user
+    # Read speed slider input from user
     if flask.request.method == 'POST':
         with open('speed.txt', 'w') as s:
             s.write(flask.request.form['speed'])
@@ -86,6 +99,14 @@ def main():
     ap.add_argument("-i", "--ip", type=str, default="127.0.0.1", help="ip address of the device")
     ap.add_argument("-o", "--port", type=int, default="5005", help="ephemeral port number of the server (1024 to 65535)")
     args = vars(ap.parse_args())
+
+    # Write initial values to data files
+    with open('button_status.txt', 'w') as bf:
+        bf.write("0")
+    with open('speed.txt', 'w') as sf:
+        sf.write("50")
+    with open('key_input.txt', 'w') as kf:
+        kf.write("w")
 
     # Start thread to stream video
     video_thread = threading.Thread(target=streamVideo, args=())
