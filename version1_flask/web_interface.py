@@ -1,7 +1,9 @@
+#!/usr/bin/python3
+
 # web_interface.py
 # Creates html file to stream video feed to web browser.
 
-import flask, cv2, threading, argparse
+import flask, cv2, threading, argparse, os, time
 
 # Global variables
 app = flask.Flask(__name__.split('.')[0])
@@ -28,10 +30,23 @@ def index():
 def updateKeyInput():
     # Read key input from user and write most recent key to data file
     if flask.request.method == 'POST':
-        with open('key_input.txt', 'w') as ki:
-            input_unformatted = flask.request.form.get('intext')
-            last_input_key = input_unformatted[len(input_unformatted) - 1]
-            ki.write(last_input_key)
+        data = flask.request.get_json()
+        inputKey = data['keyVal']
+
+        # Map input key to adws control scheme and write to file
+        if inputKey == 'Left':
+            with open('key_input.txt', 'w') as ki:
+                ki.write('a')
+        elif inputKey == 'Right':
+            with open('key_input.txt', 'w') as ki:
+                ki.write('d')
+        elif inputKey == 'Up':
+            with open('key_input.txt', 'w') as ki:
+                ki.write('w')
+        elif inputKey == 'Down':
+            with open('key_input.txt', 'w') as ki:
+                ki.write('s')
+
 
     # Return the rendered html file
     return flask.render_template("index.html")
@@ -96,7 +111,7 @@ def video_feed():
 def main():
     # Parse command line arguments
     ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--ip", type=str, default="127.0.0.1", help="ip address of the device")
+    ap.add_argument("-i", "--ip", type=str, default="192.168.1.101", help="ip address of the device")
     ap.add_argument("-o", "--port", type=int, default="5005", help="ephemeral port number of the server (1024 to 65535)")
     args = vars(ap.parse_args())
 
@@ -119,5 +134,7 @@ def main():
 
 # Begin program
 if __name__ == '__main__':
+    time.sleep(8)
+    os.system('sudo /home/pi/Documents/Inspector/Inspector/version1_flask/a.out &')
     main()
 

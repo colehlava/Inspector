@@ -1,30 +1,51 @@
 <!DOCTYPE html>
+
 <html>
-<head>
-    <title>Stream</title>
-</head>
 
-<body>
-    <div align="center">
-        <h1>Live Feed</h1>
-        <img src="{{ url_for('video_feed') }}">
-    </div>
+    <head>
+        <title>Stream</title>
+    </head>
 
-    <form method="post" action="/">
-        <input type="submit" name="on" value="on">
-        <input type="submit" name="off" value="off">
-    </form>
-
-    <form method="post" action="/key_input">
-        <input type="text" name="intext" value="" autofocus="autofocus">
-    </form>
-
-    <form method="post" action="/speed_slider">
-        <div class="slidecontainer" id="slide_container1" align="center">
-            <input type="range" id="speed" name="speed" min="0" max="99">
-            <input type="submit" value="Set Speed">
+    <body>
+        <div align="center">
+            <h1>Live Feed</h1>
+            <img src="{{ url_for('video_feed') }}">
         </div>
-    </form>
-</body>
+
+        <form method="post" action="/">
+            <h2>Power</h2>
+            <input type="submit" name="on" value="on">
+            <input type="submit" name="off" value="off">
+        </form>
+
+        <br>
+
+        <form method="post" action="/speed_slider">
+            <div class="slidecontainer" id="slide_container1" align="center">
+                <input type="range" id="speed" name="speed" min="0" max="99">
+                <input type="submit" value="Set Speed">
+            </div>
+        </form>
+    </body>
+
+    <script>
+        window.addEventListener('keydown', ((evt) => {
+            const direction = evt.key.replace('Arrow', '');
+            console.log(direction)
+
+            // Create request
+            const request = new XMLHttpRequest();
+            const address = '/key_input';
+            request.open("POST", address, true);
+
+            // Send the proper header information
+            request.setRequestHeader("Content-type", "application/json");
+
+            // Send parameters
+            const params = JSON.stringify({"keyVal": direction});
+            request.send(params)
+        }));
+    </script>
+
 </html>
 
