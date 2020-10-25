@@ -65,14 +65,15 @@ int main (int argc, char * argv[]) {
   // Main loop
   while (1) {
       // Open data files for reading
-      button_file = fopen("button_status.txt", "r");
-      speed_file = fopen("speed.txt", "r");
-      key_input_file = fopen("key_input.txt", "r");
+      button_file = fopen("/home/pi/Documents/Inspector/Inspector/version1_flask/button_status.txt", "r");
+      speed_file = fopen("/home/pi/Documents/Inspector/Inspector/version1_flask/speed.txt", "r");
+      key_input_file = fopen("/home/pi/Documents/Inspector/Inspector/version1_flask/key_input.txt", "r");
 
       // Ensure files exist
       if (button_file == NULL || speed_file == NULL || key_input_file == NULL) {
         printf("Failed to open data files.\n");
-        return -1;
+        //return -1;
+        continue;
       }
 
       // Format message to be sent over USB
@@ -95,11 +96,12 @@ int main (int argc, char * argv[]) {
       // Throw error if OUT transfer failed
       if (usb_return_val != 0) {
           perror("OUT transfer failed\n");
-          return -1;
+          //return -1;
+          continue;
       }
 
       // Delay
-      for (int i = 0; i < 10000000; i++);
+      for (int i = 0; i < 100000000; i++);
   }
 
   // Cleanup
