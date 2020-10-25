@@ -16,10 +16,10 @@ def index():
     # Read button inputs from user
     if flask.request.method == 'POST':
         if flask.request.form.get('on') == 'on':
-            with open('button_status.txt', 'w') as bs:
+            with open('/home/pi/Documents/Inspector/Inspector/version1_flask/button_status.txt', 'w') as bs:
                 bs.write("1")
         elif flask.request.form.get('off') == 'off':
-            with open('button_status.txt', 'w') as bs:
+            with open('/home/pi/Documents/Inspector/Inspector/version1_flask/button_status.txt', 'w') as bs:
                 bs.write("0")
 
     # Return the rendered html file
@@ -35,16 +35,16 @@ def updateKeyInput():
 
         # Map input key to adws control scheme and write to file
         if inputKey == 'Left':
-            with open('key_input.txt', 'w') as ki:
+            with open('/home/pi/Documents/Inspector/Inspector/version1_flask/key_input.txt', 'w') as ki:
                 ki.write('a')
         elif inputKey == 'Right':
-            with open('key_input.txt', 'w') as ki:
+            with open('/home/pi/Documents/Inspector/Inspector/version1_flask/key_input.txt', 'w') as ki:
                 ki.write('d')
         elif inputKey == 'Up':
-            with open('key_input.txt', 'w') as ki:
+            with open('/home/pi/Documents/Inspector/Inspector/version1_flask/key_input.txt', 'w') as ki:
                 ki.write('w')
         elif inputKey == 'Down':
-            with open('key_input.txt', 'w') as ki:
+            with open('/home/pi/Documents/Inspector/Inspector/version1_flask/key_input.txt', 'w') as ki:
                 ki.write('s')
 
 
@@ -56,7 +56,7 @@ def updateKeyInput():
 def updateSpeed():
     # Read speed slider input from user
     if flask.request.method == 'POST':
-        with open('speed.txt', 'w') as s:
+        with open('/home/pi/Documents/Inspector/Inspector/version1_flask/speed.txt', 'w') as s:
             s.write(flask.request.form['speed'])
 
     # Return the rendered html file
@@ -116,11 +116,11 @@ def main():
     args = vars(ap.parse_args())
 
     # Write initial values to data files
-    with open('button_status.txt', 'w') as bf:
+    with open('/home/pi/Documents/Inspector/Inspector/version1_flask/button_status.txt', 'w') as bf:
         bf.write("0")
-    with open('speed.txt', 'w') as sf:
+    with open('/home/pi/Documents/Inspector/Inspector/version1_flask/speed.txt', 'w') as sf:
         sf.write("50")
-    with open('key_input.txt', 'w') as kf:
+    with open('/home/pi/Documents/Inspector/Inspector/version1_flask/key_input.txt', 'w') as kf:
         kf.write("w")
 
     # Start thread to stream video
